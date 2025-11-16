@@ -1,0 +1,18 @@
+# ------------------------------
+# BUILD SYSTEM
+# ------------------------------
+bin
+build
+lib
+CMakeFiles
+.cache
+
+compile_commands.json
+include/Config.h
+
+# ------------------------------
+# OS Files
+# ------------------------------
+.DS_Store
+Thumbs.db
+
