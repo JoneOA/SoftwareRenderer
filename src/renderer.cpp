@@ -42,7 +42,7 @@ bool Renderer::Run(){
 
     SDL_Event e;
     bool quit = false;
-    const char file[] = "/home/owainj/dev/Cpp/SoftwareRenderer/resource/CharlieAndMe.bmp";
+    const char file[] = "/home/owainj/dev/SoftwareRenderer/resource/CharlieAndMe.bmp";
     SDL_Surface* surface = SDL_LoadBMP(file);
     
     canvas.data.pixels = (char*)surface->pixels;
@@ -59,12 +59,13 @@ bool Renderer::Run(){
     vec2d p3 = {(double)canvas.data.w / 2,  (double)canvas.data.h / 3};
     vec2d p1 = {(double)canvas.data.w / 3, 2 * (double)canvas.data.h / 3};
     vec2d p2 = {2 * (double)canvas.data.w / 3, 2 * (double)canvas.data.h / 3};
+    vec2d centre = {(double)canvas.data.w, (double)canvas.data.h /2};
 
     std::cout << "P1 " << p1.x << ", " << p1.y << std::endl;
     std::cout << "P2 " << p2.x << ", " << p2.y << std::endl;
     std::cout << "P3 " << p3.x << ", " << p3.y << std::endl;
     
-    canvas.GetBarycentricCoords(p1, p2, p3, p1);
+    canvas.GetBarycentricCoords(p1, p2, p3, centre);
     canvas.DrawTriangle(p1, p2 , p3);
     while(!quit){
         while(SDL_PollEvent(&e)!= 0)

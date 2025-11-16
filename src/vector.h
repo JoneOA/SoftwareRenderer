@@ -28,3 +28,8 @@ T Vec2Sub(T vec1, T vec2)
     return { vec1.x - vec2.x, vec1.y - vec2.y };
 }
 
+template <typename T>
+double Vec2CrossProd(T vec1, T vec2)
+{
+    return (vec1.x * vec2.y) - (vec1.y * vec2.x);
+}

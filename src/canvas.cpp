@@ -59,9 +59,9 @@ void Canvas::DrawLine(vec2d start, vec2d end, int width)
 
 void Canvas::DrawPoint(vec2d point, int width)
 {
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch)] = 0x7F * (width + 1);
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 1] = 0xff;
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 2] = 0x00;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch)] = 0xB4;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 1] = 0x69;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 2] = 0xFF;
 }
 
 //TODO: Change vec2d's into vertex with colour component
@@ -76,21 +76,33 @@ void Canvas::DrawTriangle(vec2d p1, vec2d p2, vec2d p3)
 
 }
 
+template <typename T>
+double TriangleArea (T vec1, T vec2, T vec3)
+{
+    vec2d A = Vec2Sub(vec2, vec1);
+    vec2d B = Vec2Sub(vec3, vec1);
+
+    return Vec2CrossProd(B, A) / 2.0;
+}
+
 //TODO: Calculate whether point is inside 3 points to colour solid
 void Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec2d cp1)
 {
-    
-    vec2d BA = Vec2Sub(tp2, tp1);
-    vec2d CA = Vec2Sub(tp3, tp1);
+    double triangleArea = TriangleArea(tp1, tp2, tp3);
 
-    
+    for(int j = 0; j < data.h; j++)
+    {
+        for(int i = 0; i < data.w; i++)
+        {
+            double area = 0;
+            vec2d point = {i, j};
 
-
-    vec2d p1, p2;
-    p1 = {2, 2};
-    p2 = {1, 1};
-    vec2d dif = Vec2Sub(p1, p2);
-
-    std::cout << dif.x << ", " << dif.y << std::endl;
-    
+            area += abs(TriangleArea(tp1, tp2, point));
+            area += abs(TriangleArea(tp2, tp3, point));
+            area += abs(TriangleArea(tp3, tp1, point));
+            if(area -1 < triangleArea && area + 1 > triangleArea)
+                DrawPoint(point, 1);
+        }
+    }
 }
+   

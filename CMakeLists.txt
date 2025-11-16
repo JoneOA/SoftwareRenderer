@@ -34,6 +34,7 @@ add_executable(SoftwareRenderer
     "${CMAKE_CURRENT_SOURCE_DIR}/src/renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/canvas.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/canvas.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/vector.h"
     )
 
 # --------------------------------------------------
