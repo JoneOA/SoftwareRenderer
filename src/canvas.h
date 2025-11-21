@@ -9,7 +9,7 @@ public:
         int w;
         int h;
         int pitch;
-        char* pixels;
+        unsigned char* pixels;
     } data;
 
     double angle = 1;

@@ -15,7 +15,7 @@ bool Renderer::Init(int width, int height, int flags){
 
     win = SDL_CreateWindow("SDL3 Project", width, height, flags);
     
-    canvas.data = {width, height, 3, new char[width * height * 3]{}};
+    canvas.data = {width, height, 3, new unsigned char[width * height * 3]{}};
 
     
     std::cout << "buff size: " <<width * height * 3 << " :" << sizeof(canvas.data.pixels) << std::endl;
@@ -38,14 +38,12 @@ bool Renderer::Init(int width, int height, int flags){
 }
 
 bool Renderer::Run(){
-
-
     SDL_Event e;
     bool quit = false;
     const char file[] = "../../resource/CharlieAndMe.bmp";
     SDL_Surface* surface = SDL_LoadBMP(file);
     
-    canvas.data.pixels = (char*)surface->pixels;
+    canvas.data.pixels = (unsigned char*)surface->pixels;
 
     if(surface == nullptr){
         std::cout << "SDL_LoadBMP Error: " << SDL_GetError() << std::endl;

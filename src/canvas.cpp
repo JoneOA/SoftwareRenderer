@@ -37,7 +37,7 @@ void Canvas::DrawLine(vec2d start, vec2d end, int width)
     double length = std::sqrt(dx * dx + dy * dy);
     double s = (double)dx / length; 
     double c = (double)dy / length;
-    int D = 0;
+    double D = 0;
 
     for(vec2d xy = start; xy.x < end.x; xy.x++){
         if(steep) DrawPoint({xy.y, xy.x}, 3);
@@ -105,14 +105,13 @@ void Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec2d cp1)
     br.x = std::max(std::max(tp1.x, tp2.x), tp3.x);
     br.y = std::max(std::max(tp1.y, tp2.y), tp3.y);
 
-
-    for(int j = tl.y; j < br.y; j++)
+    for(int j = int(tl.y); j < br.y; j++)
     {
         bool hasEntered = false;
-        for(int i = tl.x; i < br.x; i++)
+        for(int i = int(tl.x); i < br.x; i++)
         {
             double area = 0;
-            vec2d point = {i, j};
+            vec2d point = {double(i), double(j)};
 
             if(IsInsideTriange(tp1, tp2, tp3, point)) {
                 DrawPoint(point, 1);
@@ -121,8 +120,6 @@ void Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec2d cp1)
                 break;
             else
                 DrawPoint(point, 0);
-
-           
         }
     }
 }
