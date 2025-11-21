@@ -59,8 +59,8 @@ void Canvas::DrawLine(vec2d start, vec2d end, int width)
 
 void Canvas::DrawPoint(vec2d point, int width)
 {
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch)] = 0xB4;
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 1] = 0x69;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch)] = 0xB4 * width;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 1] = 0x69 * width;
     data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 2] = 0xFF;
 }
 
@@ -85,23 +85,44 @@ double TriangleArea (T vec1, T vec2, T vec3)
     return Vec2CrossProd(B, A) / 2.0;
 }
 
+template <typename T>
+bool IsInsideTriange(T vec1, T vec2, T vec3, T point) {
+    bool isInside = TriangleArea(vec1, vec2, point) >= 0;
+    isInside &= TriangleArea(vec2, vec3, point) >= 0;
+    isInside &= TriangleArea(vec3, vec1, point) >= 0;
+    return isInside;
+}
+
 //TODO: Calculate whether point is inside 3 points to colour solid
 void Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec2d cp1)
 {
     double triangleArea = TriangleArea(tp1, tp2, tp3);
 
-    for(int j = 0; j < data.h; j++)
+    vec2d tl, br;
+    tl.x = std::min(std::min(tp1.x, tp2.x), tp3.x);
+    tl.y = std::min(std::min(tp1.y, tp2.y), tp3.y);
+
+    br.x = std::max(std::max(tp1.x, tp2.x), tp3.x);
+    br.y = std::max(std::max(tp1.y, tp2.y), tp3.y);
+
+
+    for(int j = tl.y; j < br.y; j++)
     {
-        for(int i = 0; i < data.w; i++)
+        bool hasEntered = false;
+        for(int i = tl.x; i < br.x; i++)
         {
             double area = 0;
             vec2d point = {i, j};
 
-            area += abs(TriangleArea(tp1, tp2, point));
-            area += abs(TriangleArea(tp2, tp3, point));
-            area += abs(TriangleArea(tp3, tp1, point));
-            if(area -1 < triangleArea && area + 1 > triangleArea)
+            if(IsInsideTriange(tp1, tp2, tp3, point)) {
                 DrawPoint(point, 1);
+                hasEntered = true;
+            } else if(hasEntered)
+                break;
+            else
+                DrawPoint(point, 0);
+
+           
         }
     }
 }

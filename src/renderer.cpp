@@ -3,7 +3,7 @@
 #include <SDL3/SDL_oldnames.h>
 #include <iostream>
 #include <time.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include "canvas.h"
 
 #include <SDL3/SDL_render.h>
@@ -42,7 +42,7 @@ bool Renderer::Run(){
 
     SDL_Event e;
     bool quit = false;
-    const char file[] = "/home/owainj/dev/SoftwareRenderer/resource/CharlieAndMe.bmp";
+    const char file[] = "../../resource/CharlieAndMe.bmp";
     SDL_Surface* surface = SDL_LoadBMP(file);
     
     canvas.data.pixels = (char*)surface->pixels;
@@ -56,9 +56,9 @@ bool Renderer::Run(){
     time_t start = time(0);
     int frameCount = 0;
 
-    vec2d p3 = {(double)canvas.data.w / 2,  (double)canvas.data.h / 3};
-    vec2d p1 = {(double)canvas.data.w / 3, 2 * (double)canvas.data.h / 3};
+    vec2d p1 = {(double)canvas.data.w / 3, 2 * (double)canvas.data.h / 2};
     vec2d p2 = {2 * (double)canvas.data.w / 3, 2 * (double)canvas.data.h / 3};
+    vec2d p3 = {(double)canvas.data.w / 2,  (double)canvas.data.h / 3};
     vec2d centre = {(double)canvas.data.w, (double)canvas.data.h /2};
 
     std::cout << "P1 " << p1.x << ", " << p1.y << std::endl;
