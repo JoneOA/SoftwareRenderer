@@ -33,3 +33,15 @@ double Vec2CrossProd(T vec1, T vec2)
 {
     return (vec1.x * vec2.y) - (vec1.y * vec2.x);
 }
+
+template <typename T>
+T Vec2CrossProdV(T vec1, T vec2)
+{
+    return {-(vec2.y - vec1.y), vec2.x - vec1.x };
+}
+
+template <typename T>
+double Vec2DotProd(T vec1, T vec2)
+{
+    return (vec1.x * vec2.x) + (vec1.y * vec2.y);
+}

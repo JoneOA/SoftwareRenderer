@@ -6,6 +6,7 @@ build
 lib
 CMakeFiles
 .cache
+.vs
 
 compile_commands.json
 include/Config.h

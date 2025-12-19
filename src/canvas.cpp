@@ -40,8 +40,8 @@ void Canvas::DrawLine(vec2d start, vec2d end, int width)
     double D = 0;
 
     for(vec2d xy = start; xy.x < end.x; xy.x++){
-        if(steep) DrawPoint({xy.y, xy.x}, 3);
-        else DrawPoint(xy, width);
+        if(steep) DrawPoint({xy.y, xy.x}, 3, 1.0);
+        else DrawPoint(xy, width, 1.0);
                 
         if(d <= 0)
         {
@@ -57,11 +57,11 @@ void Canvas::DrawLine(vec2d start, vec2d end, int width)
     }
 }
 
-void Canvas::DrawPoint(vec2d point, int width)
+void Canvas::DrawPoint(vec2d point, int width, double w)
 {
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch)] = 0xB4 * width;
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 1] = 0x69 * width;
-    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 2] = 0xFF;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch)] = 0xB4 * w;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 1] = 0x69 * w;
+    data.pixels[((int)point.y * data.pitch * data.w) + ((int)point.x * data.pitch) + 2] = 0xFF * w;
 }
 
 //TODO: Change vec2d's into vertex with colour component
@@ -69,15 +69,12 @@ void Canvas::DrawPoint(vec2d point, int width)
 //      Optimisations can be made
 void Canvas::DrawTriangle(vec2d p1, vec2d p2, vec2d p3)
 {
-    DrawLine(p1, p2, 1);
-    DrawLine(p2, p3, 1);
-    DrawLine(p3, p1, 1);
-
-
+    DrawLine(p1, p2, 1.0);
+    DrawLine(p2, p3, 1.0);
+    DrawLine(p3, p1, 1.0);
 }
 
-template <typename T>
-double TriangleArea (T vec1, T vec2, T vec3)
+double TriangleArea (vec2d vec1, vec2d vec2, vec2d vec3)
 {
     vec2d A = Vec2Sub(vec2, vec1);
     vec2d B = Vec2Sub(vec3, vec1);
@@ -112,14 +109,11 @@ void Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec2d cp1)
         {
             double area = 0;
             vec2d point = {double(i), double(j)};
-
             if(IsInsideTriange(tp1, tp2, tp3, point)) {
-                DrawPoint(point, 1);
+                DrawPoint(point, 1, cp1.x);
                 hasEntered = true;
             } else if(hasEntered)
                 break;
-            else
-                DrawPoint(point, 0);
         }
     }
 }
