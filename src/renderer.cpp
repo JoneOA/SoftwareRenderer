@@ -3,6 +3,7 @@
 #include <SDL3/SDL_oldnames.h>
 #include <iostream>
 #include <time.h>
+#include <cmath>
 //#include <unistd.h>
 #include "canvas.h"
 
@@ -54,15 +55,17 @@ bool Renderer::Run(){
     time_t start = time(0);
     int frameCount = 0;
 
-    vec2d p1 = {(double)canvas.data.w / 3, 2 * (double)canvas.data.h / 2};
+    vec2d p1 = {(double)canvas.data.w / 3, 2 * (double)canvas.data.h / 3};
     vec2d p2 = {2 * (double)canvas.data.w / 3, 2 * (double)canvas.data.h / 3};
     vec2d p3 = {(double)canvas.data.w / 2,  (double)canvas.data.h / 3};
     vec2d centre = {(double)canvas.data.w, (double)canvas.data.h /2};
+    
+    canvas.GetBarycentricCoords(p1, p2, p3, centre);
 
     std::vector<vec3d> verticies;
     std::vector<int> indicies;
     std::vector<vec3d> normals;
-    parseObj3d("./resource/utah_teapot.obj", verticies, indicies, normals);
+    parseObj3d("./resource/newell_teaset/teapot.obj", verticies, indicies, normals);
     std::cout << "Teapot parsed" << std::endl;
 
     for(size_t i = 0; i < verticies.size(); i++){
@@ -70,7 +73,7 @@ bool Renderer::Run(){
     }
 
     std::cout << "Points Affected" << std::endl;
-    std::cout << "Max index - " << *std::max_element(indicies.begin(), indicies.end()) << std::endl;
+    //std::cout << "Max index - " << *std::max_element(indicies.begin(), indicies.end()) << std::endl;
     std::cout << "Points size - " << verticies.size() << std::endl;
 
     for(size_t i = 0; i < indicies.size(); i += 3) {
@@ -78,8 +81,12 @@ bool Renderer::Run(){
         p1 = {(verticies[indicies[i] - 1].x) / (verticies[indicies[i] - 1].z) + 200, ((verticies[indicies[i] - 1].y)) / (verticies[indicies[i] - 1].z) + 200};
         p2 = {(verticies[indicies[i + 1] - 1].x) / (verticies[indicies[i + 1] - 1].z) + 200, ((verticies[indicies[i + 1] - 1].y)) / (verticies[indicies[i + 1] - 1].z) + 200};
         p3 = {(verticies[indicies[i + 2] - 1].x) / (verticies[indicies[i + 2] - 1].z) + 200, ((verticies[indicies[i + 2] - 1].y)) / (verticies[indicies[i + 2] - 1].z) + 200};
-        
-        centre.x = Vec3DotProd(verticies[indicies[i] - 1], normals[indicies[i] - 1]);
+
+        if(Vec2Winding(p1, p2, p3) <= 0) continue;
+        vec3d normVert = Vec3Norm(verticies[indicies[i] - 1]);
+        //normVert = {-normVert.x, -normVert.y, -normVert.z};
+        std::cout << "Normal Verticies - " << normVert.x << ", " << normVert.y << ", " << normVert.z << std::endl;
+        centre.x = std::max(0.0, Vec3DotProd(normVert, normals[indicies[i] - 1]));
 
         canvas.GetBarycentricCoords(p1, p2, p3, centre);
     }

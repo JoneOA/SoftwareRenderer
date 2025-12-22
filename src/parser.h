@@ -25,7 +25,7 @@ bool parseObj3d(std::string path, std::vector<vec3d>& verticies, std::vector<int
         posF = line.find("f ");
         posN = line.find("vn ");
 
-        if(posV != -1){
+        if(posV != std::string::npos){
             line.erase(0, pos + 2);
             pos = line.find(" ");
             point.x = stod(line.substr(0, pos));
@@ -37,7 +37,7 @@ bool parseObj3d(std::string path, std::vector<vec3d>& verticies, std::vector<int
 
             verticies.push_back(point);
         }
-        else if(posF != -1){
+        else if(posF != std::string::npos){
             line.erase(0, pos + 2);
             pos = line.find("/");
             int i1 = stoi(line.substr(0, pos));
@@ -62,7 +62,7 @@ bool parseObj3d(std::string path, std::vector<vec3d>& verticies, std::vector<int
             indicies.push_back(i3);
             indicies.push_back(i4);
         }
-        else if(posN != -1){
+        else if(posN != std::string::npos){
             vec3d normal;
             line.erase(0, pos + 3);
             pos = line.find(" ");
