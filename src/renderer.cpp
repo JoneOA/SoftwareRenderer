@@ -59,23 +59,28 @@ bool Renderer::Run(){
     vec2d p3 = {(double)canvas.data.w / 2,  (double)canvas.data.h / 3};
     vec2d centre = {(double)canvas.data.w, (double)canvas.data.h /2};
 
+    std::vector<vec3d> verticies;
     std::vector<int> indicies;
-    std::vector<vec3d> points = parseObj3d("./resource/utah_teapot.obj", indicies);
+    std::vector<vec3d> normals;
+    parseObj3d("./resource/utah_teapot.obj", verticies, indicies, normals);
     std::cout << "Teapot parsed" << std::endl;
 
-    for(size_t i = 0; i < points.size(); i++){
-        points[i] = {(points[i] .x * 200), (480 - points[i].y * 200), (points[i].z + 4)};
+    for(size_t i = 0; i < verticies.size(); i++){
+        verticies[i] = {(verticies[i] .x * 200), (480 - verticies[i].y * 200), (verticies[i].z + 4)};
     }
 
     std::cout << "Points Affected" << std::endl;
     std::cout << "Max index - " << *std::max_element(indicies.begin(), indicies.end()) << std::endl;
-    std::cout << "Points size - " << points.size() << std::endl;
+    std::cout << "Points size - " << verticies.size() << std::endl;
 
     for(size_t i = 0; i < indicies.size(); i += 3) {
         std::cout << "Indicies - " << i << ", " << i + 1 << ", " << i + 2 << std::endl;
-        p1 = {(points[indicies[i] - 1].x) / (points[indicies[i] - 1].z) + 200, ((points[indicies[i] - 1].y)) / (points[indicies[i] - 1].z) + 200};
-        p2 = {(points[indicies[i + 1] - 1].x) / (points[indicies[i + 1] - 1].z) + 200, ((points[indicies[i + 1] - 1].y)) / (points[indicies[i + 1] - 1].z) + 200};
-        p3 = {(points[indicies[i + 2] - 1].x) / (points[indicies[i + 2] - 1].z) + 200, ((points[indicies[i + 2] - 1].y)) / (points[indicies[i + 2] - 1].z) + 200};
+        p1 = {(verticies[indicies[i] - 1].x) / (verticies[indicies[i] - 1].z) + 200, ((verticies[indicies[i] - 1].y)) / (verticies[indicies[i] - 1].z) + 200};
+        p2 = {(verticies[indicies[i + 1] - 1].x) / (verticies[indicies[i + 1] - 1].z) + 200, ((verticies[indicies[i + 1] - 1].y)) / (verticies[indicies[i + 1] - 1].z) + 200};
+        p3 = {(verticies[indicies[i + 2] - 1].x) / (verticies[indicies[i + 2] - 1].z) + 200, ((verticies[indicies[i + 2] - 1].y)) / (verticies[indicies[i + 2] - 1].z) + 200};
+        
+        centre.x = Vec3DotProd(verticies[indicies[i] - 1], normals[indicies[i] - 1]);
+
         canvas.GetBarycentricCoords(p1, p2, p3, centre);
     }
 

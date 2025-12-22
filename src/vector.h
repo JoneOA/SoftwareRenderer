@@ -45,3 +45,9 @@ double Vec2DotProd(T vec1, T vec2)
 {
     return (vec1.x * vec2.x) + (vec1.y * vec2.y);
 }
+
+template <typename T>
+double Vec3DotProd(T vec1, T vec2)
+{
+    return (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z);
+}
