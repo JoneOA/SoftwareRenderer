@@ -77,7 +77,7 @@ bool Renderer::Run(){
     std::cout << "Points size - " << verticies.size() << std::endl;
 
     for(size_t i = 0; i < indicies.size(); i += 3) {
-        std::cout << "Indicies - " << i << ", " << i + 1 << ", " << i + 2 << std::endl;
+        //std::cout << "Indicies - " << i << ", " << i + 1 << ", " << i + 2 << std::endl;
         p1 = {(verticies[indicies[i] - 1].x) / (verticies[indicies[i] - 1].z) + 200, ((verticies[indicies[i] - 1].y)) / (verticies[indicies[i] - 1].z) + 200};
         p2 = {(verticies[indicies[i + 1] - 1].x) / (verticies[indicies[i + 1] - 1].z) + 200, ((verticies[indicies[i + 1] - 1].y)) / (verticies[indicies[i + 1] - 1].z) + 200};
         p3 = {(verticies[indicies[i + 2] - 1].x) / (verticies[indicies[i + 2] - 1].z) + 200, ((verticies[indicies[i + 2] - 1].y)) / (verticies[indicies[i + 2] - 1].z) + 200};
@@ -85,7 +85,7 @@ bool Renderer::Run(){
         if(Vec2Winding(p1, p2, p3) <= 0) continue;
         vec3d normVert = Vec3Norm(verticies[indicies[i] - 1]);
         //normVert = {-normVert.x, -normVert.y, -normVert.z};
-        std::cout << "Normal Verticies - " << normVert.x << ", " << normVert.y << ", " << normVert.z << std::endl;
+        //std::cout << "Normal Verticies - " << normVert.x << ", " << normVert.y << ", " << normVert.z << std::endl;
         centre.x = std::max(0.0, Vec3DotProd(normVert, normals[indicies[i] - 1]));
 
         canvas.GetBarycentricCoords(p1, p2, p3, centre);
