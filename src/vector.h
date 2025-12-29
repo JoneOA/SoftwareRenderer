@@ -22,6 +22,12 @@ struct vec3d {
     double z;
 };
 
+struct vec3c {
+    unsigned char x;
+    unsigned char y;
+    unsigned char z;
+};
+
 template <typename T>
 T Vec2Sub(T& vec1, T& vec2)
 {
@@ -53,9 +59,15 @@ double Vec3DotProd(T& vec1, T& vec2)
 }
 
 template <typename T>
+double Vec3Mag(T& vec)
+{
+    return sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z));
+}
+
+template <typename T>
 T Vec3Norm(T& vec)
 {
-    double mag = sqrt((vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z)); 
+    double mag = Vec3Mag(vec); 
 
     return {vec.x/mag, vec.y/mag, vec.z/mag};
 }
@@ -70,6 +82,24 @@ T Vec3CrossProd(T& vec1, T& vec2)
 }
 
 template <typename T>
+T Vec3Sum(const T& vec1, const T& vec2)
+{
+    return {vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z};
+}
+
+template <typename T>
+T Vec3Scale(const T& vec1, const T& vec2)
+{
+    return {vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z};
+}
+
+template <typename T>
+vec2d Vec3Project(const T& vec)
+{
+    return {vec.x / vec.z, vec.y / vec.z};
+} 
+
+template <typename T>
 double Vec2Winding(T& vec1, T& vec2, T& vec3)
 {
     T u = Vec2Sub(vec1, vec2);
@@ -77,4 +107,3 @@ double Vec2Winding(T& vec1, T& vec2, T& vec3)
     
     return Vec2CrossProd(u, v);
 }
-

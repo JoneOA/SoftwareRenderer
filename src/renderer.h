@@ -12,7 +12,7 @@ public:
 private:
     SDL_Window* win;
     SDL_Renderer* ren;
-    Canvas canvas;
+    Canvas* canvas;
 
     int increment = 1;
 };
