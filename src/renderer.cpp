@@ -61,9 +61,9 @@ bool Renderer::Run(){
     vec2d p1 = {(double)canvas->data.w / 3, 2 * (double)canvas->data.h / 3};
     vec3c c1 = {0xcb, 0xC0, 0xff};
     vec2d p2 = {2 * (double)canvas->data.w / 3, 2 * (double)canvas->data.h / 3};
-    vec3c c2 = {0xff, 0xff, 0xff};
+    vec3c c2 = {0xcb, 0xC0, 0xff};
     vec2d p3 = {(double)canvas->data.w / 2,  (double)canvas->data.h / 3};
-    vec3c c3 = {0xff, 0xff, 0xff};
+    vec3c c3 = {0xcb, 0xC0, 0xff};
     vec2d centre = {(double)canvas->data.w, (double)canvas->data.h /2};
 
     std::cout << "Tri vec winding : " << Vec2Winding(p1, p2, p3) << std::endl;
@@ -76,7 +76,7 @@ bool Renderer::Run(){
     std::cout << "Teapot parsed" << std::endl;
 
     vec3d scale  = {1, 1, 1};
-    vec3d shift = {0, -2, 4};
+    vec3d shift = {0, -2, 5};
     vec3d shiftR = {-shift.x, -shift.y, -shift.z};
 
     for(size_t i = 0; i < verticies.size(); i++)
@@ -130,6 +130,8 @@ bool Renderer::Run(){
             verticies[i] = Vec3Sum(verticies[i], shiftR);
             verticies[i].x = verticies[i].x * cos(double(rotationCounter) / 5000 * angle) - verticies[i].z * sin(double(rotationCounter) / 5000 * angle);
             verticies[i].z = verticies[i].x * sin(double(rotationCounter) / 5000 * angle) + verticies[i].z * cos(double(rotationCounter) / 5000 * angle);
+            normals[i].x = normals[i].x * cos(double(rotationCounter) / 5000 * angle) - normals[i].z * sin(double(rotationCounter) / 5000 * angle);
+            normals[i].z = normals[i].x * sin(double(rotationCounter) / 5000 * angle) + normals[i].z * cos(double(rotationCounter) / 5000 * angle);
             verticies[i] = Vec3Sum(verticies[i], shift);
         }
 

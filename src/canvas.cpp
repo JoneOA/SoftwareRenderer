@@ -13,10 +13,11 @@ Canvas::Canvas(int width, int height, int pitch, unsigned char* pixels)
 
     m_depth.w = width;
     m_depth.h = height;
-    m_depth.pitch = 3;
+    m_depth.pitch = 1;
     m_depth.pixels = new double[width * height * m_depth.pitch]{};
-    for(int i = 0; i < width * height * pitch; i++)
+    for(int i = 0; i < m_depth.w * m_depth.h * m_depth.pitch; i++)
         m_depth.pixels[i] = 255.0;
+
 }
 
 void Canvas::Draw()
@@ -82,8 +83,6 @@ void Canvas::DrawPoint(vec2d point, vec3c colour, int width, double w)
 }
 
 //TODO: Change vec2d's into vertex with colour component
-//TODO: Fill triangle with colour, will require looping over every pixel in the boudning box to check if it is inside
-//      Optimisations can be made
 void Canvas::DrawTriangle(vec2d p1, vec2d p2, vec2d p3)
 {
     DrawLine(p1, p2, 1.0);
@@ -107,37 +106,19 @@ bool IsInsideTriange(T vec1, T vec2, T vec3, T point) {
     return isInside;
 }
 
-//TODO: Calculate whether point is inside 3 points to colour solid
-void Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec3c c1, vec3c c2, vec3c c3, double depth)
+double Canvas::GetBarycentricCoords(vec2d tp1, vec2d tp2, vec2d tp3, vec2d point, double& w1, double& w2)
 {
-    vec2d tl, br;
-    tl.x = std::min(std::min(tp1.x, tp2.x), tp3.x);
-    tl.y = std::min(std::min(tp1.y, tp2.y), tp3.y);
+    w1 = ((tp2.y - tp3.y) * (point.x - tp3.x) + (tp3.x - tp2.x) * (point.y - tp3.y)) / ((tp2.y - tp3.y) * (tp1.x - tp3.x) + (tp3.x - tp2.x) * (tp1.y - tp3.y));
+    w2 = ((tp3.y - tp1.y) * (point.x - tp3.x) + (tp1.x - tp3.x) * (point.y - tp3.y)) / ((tp2.y - tp3.y) * (tp1.x - tp3.x) + (tp3.x - tp2.x) * (tp1.y - tp3.y));
+    double w3 = 1 - w1 - w2;
 
-    br.x = std::max(std::max(tp1.x, tp2.x), tp3.x);
-    br.y = std::max(std::max(tp1.y, tp2.y), tp3.y);
+    //std::cout << "W1 - " << w1 << ", W2 - " << w2 << ", W3 - " << w3 << std::endl;
 
-    for(int j = int(tl.y); j < br.y; j++)
-    {
-        bool hasEntered = false;
-        for(int i = int(tl.x); i < br.x; i++)
-        {
-            if(m_depth.pixels[j * m_depth.pitch * m_depth.w + i * m_depth.pitch] > 1.0/depth){
-                std::cout << m_depth.pixels[j * m_depth.pitch * m_depth.w + i * m_depth.pitch] << "<" << depth << std::endl;
-                continue;
-            }
-            
-            vec2d point = {double(i), double(j)};
-            if(IsInsideTriange(tp1, tp2, tp3, point)) {
-                DrawPoint(point, c1, 1, 0);
-                m_depth.pixels[j * m_depth.pitch * m_depth.w + i * m_depth.pitch] = 1.0/depth;
-                m_depth.pixels[j * m_depth.pitch * m_depth.w + i * m_depth.pitch + 1] = 1.0/depth;
-                m_depth.pixels[j * m_depth.pitch * m_depth.w + i * m_depth.pitch + 2] = 1.0/depth;
-                hasEntered = true;
-            }
-        }
-    }
-}
+    if(w1 < 0 || w2 < 0 || w3 < 0)
+        return false;
+
+    return true;
+} 
 
 vec2d Canvas::ModelToScreen(vec2d& point)
 {
@@ -155,14 +136,23 @@ void Canvas::DrawTriangle3D(vec3d& p1, vec3d& p2, vec3d& p3, vec3c c1, vec3c c2,
     tp2 = ModelToScreen(tp2);
     tp3 = ModelToScreen(tp3);
 
-
     if(Vec2Winding(tp1, tp2, tp3) <= 0) return;
-    vec3d normalVert = Vec3Norm(p1);
+    vec3d normalVert1 = Vec3Norm(p1);
+    vec3d normalVert2 = Vec3Norm(p2);
+    vec3d normalVert3 = Vec3Norm(p3);
 
-    c1.x = (unsigned char)(double(c1.x) * std::max(0.0, fabs(Vec3DotProd(normalVert, n1))));
-    c1.y = (unsigned char)(double(c1.y) * std::max(0.0, fabs(Vec3DotProd(normalVert, n1))));
-    c1.z = (unsigned char)(double(c1.z) * std::max(0.0, fabs(Vec3DotProd(normalVert, n1))));
+    c1.x = (unsigned char)(double(c1.x) * std::max(0.0, fabs(Vec3DotProd(normalVert1, n1))));
+    c1.y = (unsigned char)(double(c1.y) * std::max(0.0, fabs(Vec3DotProd(normalVert1, n1))));
+    c1.z = (unsigned char)(double(c1.z) * std::max(0.0, fabs(Vec3DotProd(normalVert1, n1))));
+
+    c2.x = (unsigned char)(double(c2.x) * std::max(0.0, fabs(Vec3DotProd(normalVert2, n2))));
+    c2.y = (unsigned char)(double(c2.y) * std::max(0.0, fabs(Vec3DotProd(normalVert2, n2))));
+    c2.z = (unsigned char)(double(c2.z) * std::max(0.0, fabs(Vec3DotProd(normalVert2, n2))));
     
+    c3.x = (unsigned char)(double(c3.x) * std::max(0.0, fabs(Vec3DotProd(normalVert3, n3))));
+    c3.y = (unsigned char)(double(c3.y) * std::max(0.0, fabs(Vec3DotProd(normalVert3, n3))));
+    c3.z = (unsigned char)(double(c3.z) * std::max(0.0, fabs(Vec3DotProd(normalVert3, n3))));
+
     vec3d depthVec = {Vec3Mag(p1), Vec3Mag(p2), Vec3Mag(p3)};
     double depth = Vec3Mag(depthVec);
 
@@ -182,21 +172,31 @@ void Canvas::DrawTriangle3D(vec3d& p1, vec3d& p2, vec3d& p3, vec3c c1, vec3c c2,
                 //std::cout << m_depth.pixels[j * m_depth.pitch * m_depth.w + i * m_depth.pitch] << "<" << depth << std::endl;
                 continue;
             }
-            
             vec2d point = {double(i), double(j)};
-            if(IsInsideTriange(tp1, tp2, tp3, point)) {
-                DrawPoint(point, c1, 1, 0);
+            double w1, w2;
+            if(GetBarycentricCoords(tp1, tp2, tp3, point, w1, w2)) {
+                
+                double w3 = 1 - w1 - w2;
+
+                vec2d tp1ToPoint = (point - tp1);
+                vec2d tp1Totp2 = (tp2 - tp1);
+
+                vec3d colourD = {double(c1.x * w1) + double(c2.x * w2) + double(c3.x * w3),
+                                 double(c1.y * w1) + double(c2.y * w2) + double(c3.y * w3),
+                                 double(c1.z * w1) + double(c2.z * w2) + double(c3.z * w3)};
+
+                vec3c colour = {(unsigned char)floor(colourD.x), (unsigned char)floor(colourD.y), (unsigned char)floor(colourD.z)};
+
+                //std::cout << colourD.x << ", " << colourD.y << ", " << colourD.z << std::endl;
+                //std::cout << int(colour.x) << ", " << int(colour.y) << ", " << int(colour.z) << std::endl;
+
+                DrawPoint(point, colour, 1, 0);
                 m_depth.pixels[((int)point.y * m_depth.pitch * data.w) + ((int)point.x * m_depth.pitch)] = depth;
-                m_depth.pixels[((int)point.y * m_depth.pitch * data.w) + ((int)point.x * m_depth.pitch) + 1] = depth;
-                m_depth.pixels[((int)point.y * m_depth.pitch * data.w) + ((int)point.x * m_depth.pitch) + 2] = depth;
                 hasEntered = true;
             } else if (hasEntered)
                 break;
         }
     }
-
-
-    //GetBarycentricCoords(dp1, dp2, dp3, c1, c2, c3, n2.x);
 }
 
 void Canvas::ClearDepthBuffer()
